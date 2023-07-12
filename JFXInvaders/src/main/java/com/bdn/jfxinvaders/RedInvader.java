@@ -7,8 +7,10 @@ import javafx.util.Duration;
 import java.util.Random;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
-
+// implementation of the red invader
 public class RedInvader extends InvaderComponent{
+    //spawns green aliens every 12 seconds
+
     @Override
     public void onUpdate(double tpf) {
         frameCounter ++;
@@ -22,7 +24,7 @@ public class RedInvader extends InvaderComponent{
             invaderMovementX();
         }
     }
-
+    // has guaranteed powerup drops
     @Override
     public void die() {
         Entity explosion = spawn("explosion", new SpawnData(getEntity().getX(), getEntity().getY()));

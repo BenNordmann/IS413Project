@@ -7,9 +7,9 @@ import javafx.util.Duration;
 import java.util.Random;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
-
+// implementation of the orange invader
 public class OrangeInvader extends InvaderComponent{
-
+    // has a higher chance to drop powerups on death
     @Override
     public void die() {
         Entity explosion = spawn("explosion", new SpawnData(getEntity().getX(), getEntity().getY()));

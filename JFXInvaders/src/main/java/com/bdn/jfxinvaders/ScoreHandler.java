@@ -1,7 +1,7 @@
 package com.bdn.jfxinvaders;
 
 public class ScoreHandler {
-
+    // handles the score
     private int score = 0;
 
     public void addScore(int points){

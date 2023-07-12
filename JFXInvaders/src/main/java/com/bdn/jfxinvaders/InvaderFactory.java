@@ -16,9 +16,10 @@ import javafx.scene.text.Text;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.texture;
-
+// contains the templates for spawning entities, all players and enemies are shrunk to 40pxs
+// also contains the components for each entity
 public class InvaderFactory implements EntityFactory {
-
+    // green invader/green alien template
     @Spawns("greenAlien")
     public Entity newGreenAlien(SpawnData data){
         Texture texture = texture("greenalien.png");
@@ -30,6 +31,7 @@ public class InvaderFactory implements EntityFactory {
                 .with(new GreenInvader(1, 40, 20, 10), new CollidableComponent(true), new HealthIntComponent(2), new NameComponent("greenAlien"))
                 .build();
     }
+    // template for orange alien/orange invader
     @Spawns("orangeAlien")
     public Entity newOrangeAlien(SpawnData data){
         Texture texture = texture("orangealien.png");
@@ -38,9 +40,10 @@ public class InvaderFactory implements EntityFactory {
         return entityBuilder(data)
                 .type(EntityType.ENEMY)
                 .viewWithBBox(texture)
-                .with(new OrangeInvader(3, 40, 20, 40), new CollidableComponent(true), new HealthIntComponent(2), new NameComponent("orangeAlien"))
+                .with(new OrangeInvader(6, 60, 30, 40), new CollidableComponent(true), new HealthIntComponent(2), new NameComponent("orangeAlien"))
                 .build();
     }
+    // template for red alien/red invader
     @Spawns("redAlien")
     public Entity newRedAlien(SpawnData data){
         Texture texture = texture("redalien.png");
@@ -49,9 +52,10 @@ public class InvaderFactory implements EntityFactory {
         return entityBuilder(data)
                 .type(EntityType.ENEMY)
                 .viewWithBBox(texture)
-                .with(new RedInvader(3, 40, 20, 100), new CollidableComponent(true), new HealthIntComponent(2), new NameComponent("orangeAlien"))
+                .with(new RedInvader(10, 80, 40, 100), new CollidableComponent(true), new HealthIntComponent(2), new NameComponent("orangeAlien"))
                 .build();
     }
+    // template for the player ship
     @Spawns("player")
     public Entity newPlayer(SpawnData data){
         Texture texture = texture("ship.png");
@@ -63,7 +67,7 @@ public class InvaderFactory implements EntityFactory {
                 .with(new ShipComponent())
                 .build();
     }
-
+    // template for the ship projectile
     @Spawns("shipBullet")
     public Entity newShipBullet(SpawnData data){
         Texture texture = texture("shipbullet.png");
@@ -76,6 +80,7 @@ public class InvaderFactory implements EntityFactory {
                 .build();
 
     }
+    // template for the attack up powerup
     @Spawns("attackUp")
     public Entity newAttackUp(SpawnData data){
         Texture texture = texture("attackUp.png");
@@ -88,7 +93,7 @@ public class InvaderFactory implements EntityFactory {
                 .build();
 
     }
-
+    // template for the extra shot powerup
     @Spawns("extraShot")
     public Entity newExtraShot(SpawnData data){
         Texture texture = texture("extrashot.png");
@@ -101,6 +106,7 @@ public class InvaderFactory implements EntityFactory {
                 .build();
 
     }
+    // the explosion that is spawned on death for aliens
     @Spawns("explosion")
     public Entity newExplosion(SpawnData data){
         Texture texture = texture("explosion.png");
@@ -112,6 +118,7 @@ public class InvaderFactory implements EntityFactory {
                 .build();
 
     }
+    // the background for the game
     @Spawns("background")
     public Entity newBackground(SpawnData data){
         Texture texture = texture("space.png");
