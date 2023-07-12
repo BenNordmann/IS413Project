@@ -1,13 +1,18 @@
 package com.bdn.jfxinvaders;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.TimeComponent;
 import com.almasb.fxgl.time.TimerAction;
 import javafx.util.Duration;
 
-import static com.almasb.fxgl.dsl.FXGLForKtKt.fire;
+import java.util.Random;
+
+import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 
 public abstract class InvaderComponent extends Component {
     int health;
@@ -48,7 +53,21 @@ public abstract class InvaderComponent extends Component {
     }
 
     public void die(){
+        play("alienexplosion.wav");
+        Entity explosion = spawn("explosion", new SpawnData(getEntity().getX(), getEntity().getY()));
+        Random random = new Random();
+        int seed = random.nextInt(100);
+        System.out.println(seed);
+        if(seed > 90 ){
+            spawn("extraShot", new SpawnData(getAppWidth()/2, getAppHeight() - 40));
+        }else if(seed > 75){
+            spawn("attackUp", new SpawnData(getAppWidth()/2, getAppHeight() - 40));
+        }
         getEntity().removeFromWorld();
+        runOnce(() -> {
+            explosion.removeFromWorld();
+            return null;
+        }, Duration.seconds(1));
     }
 
 

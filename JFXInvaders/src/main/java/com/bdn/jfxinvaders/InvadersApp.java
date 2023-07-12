@@ -1,12 +1,18 @@
 package com.bdn.jfxinvaders;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.audio.Music;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.components.HealthIntComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import com.bdn.jfxinvaders.ScoreHandler;
 
@@ -69,14 +75,19 @@ public class InvadersApp extends GameApplication{
     @Override
     protected void initGame() {
         getGameWorld().addEntityFactory(new InvaderFactory());
+        Music backgroundMusic = FXGL.getAssetLoader().loadMusic("backgroundmusic.mp3");
+        FXGL.getAudioPlayer().loopMusic(backgroundMusic);
+        spawnBackground();
+
         int waveSize = 5;
-        int waveTimer = 10;
+        int waveTimer = 15;
         ScoreHandler score = new ScoreHandler();
 
 
         spawnPlayer();
         spawnGreenAlien(waveSize);
         spawnGreenAlienContinuous(waveSize, waveTimer);
+
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.ENEMY) {
             @Override
@@ -95,7 +106,10 @@ public class InvadersApp extends GameApplication{
                         enemy.getComponent(GreenInvader.class).die();
                         score.addScore(enemy.getComponent(GreenInvader.class).getPoints());
                         System.out.println(score.getScore());
-                        enemy.removeFromWorld();
+                    } else if(enemy.getComponent(NameComponent.class).getName().equals("orangeAlien")){
+                        enemy.getComponent(OrangeInvader.class).die();
+                        score.addScore(enemy.getComponent(OrangeInvader.class).getPoints());
+                        System.out.println(score.getScore());
                     }
 
                 }
@@ -103,28 +117,94 @@ public class InvadersApp extends GameApplication{
             }
 
         });
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.POWERUP) {
+            @Override
+            protected void onCollisionBegin(Entity player, Entity powerup) {
+                ShipComponent shipComponent = player.getComponent(ShipComponent.class);
+                if(powerup.getComponent(NameComponent.class).getName().equals("attackUp")){
+                    AttackPowerUp attackPowerUp = powerup.getComponent(AttackPowerUp.class);
+                    shipComponent.increaseAttackSpeed(attackPowerUp.getAttackSpeedBoost());
+                    shipComponent.increaseDamage(attackPowerUp.getAttackBoost());
+                    powerup.removeFromWorld();
+                } else if(powerup.getComponent(NameComponent.class).getName().equals("extraShot")){
+                    shipComponent.increaseNumberOfShots();
+                    powerup.removeFromWorld();
+                }
+
+            }
+
+        });
+
+    }
+    private void spawnBackground(){
+        spawn("background", 0, 0);
+
 
     }
 
     private void spawnPlayer(){
-        player = spawn("player", getAppWidth()/2, getAppHeight() - 110);
+        player = spawn("player", getAppWidth()/2, getAppHeight() - 40);
         shipComponent = player.getComponent(ShipComponent.class);
 
     }
 
     private void spawnGreenAlien(int wSize){
-        for (int i = 1; i <= wSize; i++) {
-            spawn("greenAlien", getAppWidth() * (i/5), getAppHeight()/5);
+        double xSpawn;
+        for (double i = 1; i <= wSize; i++) {
+            xSpawn = getAppWidth() * (i/5);
+            spawn("greenAlien", xSpawn - 100, getAppHeight()/10);
         }
     }
 
     private void spawnGreenAlienContinuous(int wSize, int wTimer){
+
         run(() -> {
-            for (int i = 1; i <= wSize; i++) {
-                spawn("greenAlien", getAppWidth() * (i/5), getAppHeight()/5);
+            double xSpawn;
+            for (double i = 1; i <= wSize; i++) {
+                xSpawn = getAppWidth() * (i/5);
+                spawn("greenAlien", xSpawn - 100, getAppHeight()/10);
             }
             return null;
         }, Duration.seconds(wTimer));
+    }
+    private void spawnOrangeAlien(int wSize){
+        double xSpawn;
+        for (double i = 1; i <= wSize; i++) {
+            xSpawn = getAppWidth() * (i/5);
+            spawn("orangeAlien", xSpawn - 100, getAppHeight()/10);
+        }
+    }
+
+    private void spawnOrangeAlienContinuous(int wSize, int wTimer){
+
+        run(() -> {
+            double xSpawn;
+            for (double i = 1; i <= wSize; i++) {
+                xSpawn = getAppWidth() * (i/5);
+                spawn("orangeAlien", xSpawn - 100, getAppHeight()/10);
+            }
+            return null;
+        }, Duration.seconds(wTimer));
+    }
+
+    private void spawnRedAlien(){
+            spawn("redAlien", getAppWidth()/2, getAppHeight()/10);
+        }
+
+
+    private void spawnRedAlienContinuous(){
+
+        run(() -> {
+            spawn("redAlien", getAppWidth()/2, getAppHeight()/10);
+            return null;
+        }, Duration.seconds(30));
+    }
+
+    private void spawnAttackUp(){
+        spawn("attackUp", getAppWidth() - 40, getAppHeight() - 40);
+    }
+    private void spawnExtraShot(){
+        spawn("extraShot", getAppWidth() - 40, getAppHeight() - 40);
     }
 
     public static void main (String[]args){
