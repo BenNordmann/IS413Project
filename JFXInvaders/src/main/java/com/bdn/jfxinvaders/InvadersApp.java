@@ -17,7 +17,7 @@ import javafx.util.Duration;
 import com.bdn.jfxinvaders.ScoreHandler;
 
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.*;
 
@@ -82,20 +82,19 @@ public class InvadersApp extends GameApplication{
         int waveSize = 5;
         int waveTimer = 15;
         ScoreHandler score = new ScoreHandler();
-
-
         spawnPlayer();
         spawnGreenAlien(waveSize);
+        gameOver(score.getScore());
         spawnGreenAlienContinuous(waveSize, waveTimer);
+        runOnce(() -> {
+            spawnOrangeAlienContinuous(waveSize, waveTimer);
+            return null;
+        }, Duration.seconds(30));
+        runOnce(() -> {
+            spawnRedAlienContinuous();
+            return null;
+        }, Duration.seconds(60));
 
-
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.ENEMY) {
-            @Override
-            protected void onCollisionBegin(Entity player, Entity enemy) {
-
-            }
-
-        });
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PROJECTILE, EntityType.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity projectile, Entity enemy) {
@@ -110,6 +109,10 @@ public class InvadersApp extends GameApplication{
                         enemy.getComponent(OrangeInvader.class).die();
                         score.addScore(enemy.getComponent(OrangeInvader.class).getPoints());
                         System.out.println(score.getScore());
+                    }  else if(enemy.getComponent(NameComponent.class).getName().equals("redAlien")){
+                        enemy.getComponent(RedInvader.class).die();
+                        score.addScore(enemy.getComponent(RedInvader.class).getPoints());
+                        System.out.println(score.getScore());
                     }
 
                 }
@@ -117,21 +120,8 @@ public class InvadersApp extends GameApplication{
             }
 
         });
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.POWERUP) {
-            @Override
-            protected void onCollisionBegin(Entity player, Entity powerup) {
-                ShipComponent shipComponent = player.getComponent(ShipComponent.class);
-                if(powerup.getComponent(NameComponent.class).getName().equals("attackUp")){
-                    AttackPowerUp attackPowerUp = powerup.getComponent(AttackPowerUp.class);
-                    shipComponent.increaseAttackSpeed(attackPowerUp.getAttackSpeedBoost());
-                    shipComponent.increaseDamage(attackPowerUp.getAttackBoost());
-                    powerup.removeFromWorld();
-                } else if(powerup.getComponent(NameComponent.class).getName().equals("extraShot")){
-                    shipComponent.increaseNumberOfShots();
-                    powerup.removeFromWorld();
-                }
+        getPhysicsWorld().addCollisionHandler(new PowerUpHandler() {
 
-            }
 
         });
 
@@ -171,7 +161,7 @@ public class InvadersApp extends GameApplication{
         double xSpawn;
         for (double i = 1; i <= wSize; i++) {
             xSpawn = getAppWidth() * (i/5);
-            spawn("orangeAlien", xSpawn - 100, getAppHeight()/10);
+            spawn("orangeAlien", xSpawn - 180, getAppHeight()/10);
         }
     }
 
@@ -181,7 +171,7 @@ public class InvadersApp extends GameApplication{
             double xSpawn;
             for (double i = 1; i <= wSize; i++) {
                 xSpawn = getAppWidth() * (i/5);
-                spawn("orangeAlien", xSpawn - 100, getAppHeight()/10);
+                spawn("orangeAlien", xSpawn - 180, getAppHeight()/10);
             }
             return null;
         }, Duration.seconds(wTimer));
@@ -205,6 +195,24 @@ public class InvadersApp extends GameApplication{
     }
     private void spawnExtraShot(){
         spawn("extraShot", getAppWidth() - 40, getAppHeight() - 40);
+    }
+
+    private void gameOver(int score) {
+        run(() -> {
+            List<Entity> enemies = getGameWorld().getEntitiesByType(EntityType.ENEMY);
+
+            for (Entity enemy : enemies) {
+                double enemyY = enemy.getY();
+                if (enemyY >= getAppHeight()) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("Game Over!");
+                    builder.append("Final score: ")
+                            .append(score);
+                    FXGL.getDialogService().showMessageBox(builder.toString(), () -> FXGL.getGameController().gotoMainMenu());
+                }
+            } return null;
+        }, Duration.seconds(1));
+
     }
 
     public static void main (String[]args){

@@ -38,7 +38,18 @@ public class InvaderFactory implements EntityFactory {
         return entityBuilder(data)
                 .type(EntityType.ENEMY)
                 .viewWithBBox(texture)
-                .with(new GreenInvader(3, 40, 20, 40), new CollidableComponent(true), new HealthIntComponent(2), new NameComponent("orangeAlien"))
+                .with(new OrangeInvader(3, 40, 20, 40), new CollidableComponent(true), new HealthIntComponent(2), new NameComponent("orangeAlien"))
+                .build();
+    }
+    @Spawns("redAlien")
+    public Entity newRedAlien(SpawnData data){
+        Texture texture = texture("redalien.png");
+        texture.setPreserveRatio(true);
+        texture.setFitHeight(40);
+        return entityBuilder(data)
+                .type(EntityType.ENEMY)
+                .viewWithBBox(texture)
+                .with(new RedInvader(3, 40, 20, 100), new CollidableComponent(true), new HealthIntComponent(2), new NameComponent("orangeAlien"))
                 .build();
     }
     @Spawns("player")

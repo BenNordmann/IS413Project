@@ -27,4 +27,8 @@ public class OrangeInvader extends InvaderComponent{
             return null;
         }, Duration.seconds(1));
     }
+
+    public OrangeInvader(int health, double speedX, double speedY, int points) {
+        super(health, speedX, speedY, points);
+    }
 }

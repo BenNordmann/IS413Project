@@ -37,4 +37,8 @@ public class RedInvader extends InvaderComponent{
             return null;
         }, Duration.seconds(1));
     }
+
+    public RedInvader(int health, double speedX, double speedY, int points) {
+        super(health, speedX, speedY, points);
+    }
 }
